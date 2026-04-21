@@ -9,7 +9,11 @@ and verified to import correctly and expose its CLI entry points.
 ## What was installed
 
 - Python 3.12 virtual environment at `./.venv`
-- PyTorch 2.11.0 (CPU build — no CUDA GPU is available in this environment)
+- PyTorch 2.11.0 (CPU build — no CUDA GPU is available in this environment).
+  This satisfies MACE's requirement of PyTorch >= 1.12 and avoids the known-bad
+  versions: `2.1.x` (float64 training not supported) and `2.4.1` (not supported
+  by MACE). Float64 training is supported (verified: building a MACE model with
+  `torch.set_default_dtype(torch.float64)` produces float64 parameters).
 - `mace-torch` 0.3.15, installed from source by cloning
   [ACEsuit/mace](https://github.com/ACEsuit/mace) into `./mace` and running
   `pip install ./mace`
@@ -36,6 +40,22 @@ pip install --index-url https://download.pytorch.org/whl/cpu torch
 
 git clone https://github.com/ACEsuit/mace.git
 pip install ./mace
+```
+
+### PyTorch version constraints (from the upstream MACE README)
+
+- PyTorch **>= 1.12**.
+- PyTorch **2.1.x** is not recommended — training with `float64` is not
+  supported on 2.1. Use 2.2 or later for `float64` training.
+- PyTorch **2.4.1** is **not supported** by MACE. Pick a different patch
+  version (for example 2.4.0 or 2.5+).
+
+The pin-free command above installs the latest stable PyTorch, which satisfies
+all of these constraints. If you need to pin to a known-good version explicitly
+you can, for example, do:
+
+```bash
+pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2,!=2.4.1"
 ```
 
 If you have a CUDA-capable GPU, install the CUDA build of PyTorch instead —
