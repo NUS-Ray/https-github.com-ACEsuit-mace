@@ -91,6 +91,49 @@ The following CLI entry points are installed into `./.venv/bin/`:
 - `mace_select_head`
 - `mace_update_input_checkpoint`
 
+## Web UI (`app.py`)
+
+A minimal [Gradio](https://gradio.app/) web UI is included in `app.py` so you can
+drive the MACE install from a browser instead of a Python REPL.
+
+Install the extra dependency and launch:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-ui.txt
+python app.py
+```
+
+Then open the URL that Gradio prints (default <http://127.0.0.1:7860>).
+
+The UI has four tabs:
+
+1. **Environment** — shows the installed versions of Python, PyTorch, MACE,
+   e3nn, ASE and NumPy, and whether CUDA is available.
+2. **Build MACE model** — lets you pick `r_max`, `num_channels`, `max_L`,
+   `num_interactions`, `correlation`, `num_bessel`, `num_polynomial_cutoff`,
+   dtype (`float32`/`float64`) and a list of atomic numbers, then builds a
+   random-initialised `mace.modules.MACE` model and reports its parameter
+   count and architecture. Useful for sanity-checking the install and
+   exploring model-size trade-offs.
+3. **Evaluate checkpoint** — point it at a MACE `.model` checkpoint (for
+   example any file from the [mace-foundations
+   releases](https://github.com/ACEsuit/mace-foundations/releases)) and
+   enter either an ASE formula (`H2O`, `CH4`, …) or extended-XYZ text; the
+   app loads a `MACECalculator` and returns the potential energy and
+   per-atom forces. Set `device=cuda` if you have a GPU.
+4. **MACE CLI** — runs whitelisted `mace_*` CLI commands
+   (`mace_run_train --help`, `mace_eval_configs --help`, …) and shows their
+   stdout/stderr. Only commands starting with `mace_` are allowed.
+
+Environment variables:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MACE_UI_HOST` | `127.0.0.1` | Address to bind the Gradio server to. Set to `0.0.0.0` to expose on the LAN. |
+| `MACE_UI_PORT` | `7860` | Port for the Gradio server. |
+| `MACE_UI_SHARE` | `0` | Set to `1` to create a public `*.gradio.live` share link. |
+
 ## Using MACE
 
 With the venv activated, see the upstream
